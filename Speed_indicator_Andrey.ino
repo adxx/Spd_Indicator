@@ -37,6 +37,7 @@ void setup() {
   pinMode(9, INPUT_PULLUP);
   pinMode(10, INPUT_PULLUP);
   pinMode(11, INPUT_PULLUP);
+  pinMode(12, INPUT_PULLUP);
   // initialize serial:
   Serial.begin(9600);
   // reserve 200 bytes for the inputString:
@@ -59,54 +60,45 @@ void loop() {
 }
 
 void InputRead() {
-    inp_01 = digitalRead(2);
-    inp_02 = digitalRead(3);
-    inp_03 = digitalRead(4);
-    inp_04 = digitalRead(5);
-    inp_05 = digitalRead(6);
-    inp_06 = digitalRead(7);
-    inp_07 = digitalRead(8);
-    inp_08 = digitalRead(9);
-    inp_09 = digitalRead(10);
-    inp_10 = digitalRead(11);
-    dimmer = analogRead(A0);
-    dimmer = (dimmer)/4;
-    /*
-    if (dimmer < 40) {
-      dimmer = 40;
-    }
-    if (dimmer >250) {
-      dimmer = 250;
-    }
-    dimmer = dimmer - 40;
-    dimmer = (dimmer / 210) * 255;*/
-    dimmer = 255 - dimmer;
+    spd = 0;
+    inp_01 = digitalRead(11); //S1
+    inp_02 = digitalRead(9);  //S2
+    inp_03 = digitalRead(7);  //S3
+    inp_04 = digitalRead(5);  //S4
+    inp_05 = digitalRead(4);  //SLU
+    inp_06 = digitalRead(12); //резерв
+    dimmer = analogRead(A0); //читаем значение 10 бит
+    dimmer = (dimmer)/4; //приводим к 8бит
+    dimmer = 255 - dimmer; //
     if (dimmer < MinLight) {
       dim = MinDim;
     }
     if (dimmer > MinLight) {
       dim = dimmer;
     }
-    
-    if(inp_01 == ON & inp_02 == OFF & inp_03 == OFF & inp_04 == OFF) {
+    if(inp_01 == OFF & inp_02 == OFF & inp_03 == OFF & inp_04 == OFF) {
+      spd = 0;
+    }
+    if(inp_01 == OFF & inp_02 == ON & inp_03 == ON & inp_04 == ON) {
       spd = 1;
     }
-    if(inp_01 == OFF & inp_02 == ON & inp_03 == OFF & inp_04 == OFF) {
+    if(inp_01 == ON & inp_02 == ON & inp_03 == ON & inp_04 == ON) {
       spd = 2;
     }
-    if(inp_01 == OFF & inp_02 == OFF & inp_03 == ON & inp_04 == OFF) {
+    if(inp_01 == ON & inp_02 == OFF & inp_03 == ON & inp_04 == ON) {
       spd = 3;
     }
-    if(inp_01 == OFF & inp_02 == OFF & inp_03 == OFF & inp_04 == ON) {
+    if(inp_01 == ON & inp_02 == OFF & inp_03 == OFF & inp_04 == ON) {
       spd = 4;
     }
-    /*
-    if(inp_01 == OFF & inp_02 == ON & inp_03 == OFF & inp_04 == OFF) {
+    if(inp_01 == ON & inp_02 == OFF & inp_03 == OFF & inp_04 == OFF) {
       spd = 5;
     }
-    if(inp_01 == OFF & inp_02 == ON & inp_03 == OFF & inp_04 == OFF) {
+    if(inp_01 == ON & inp_02 == ON & inp_03 == OFF & inp_04 == OFF) {
       spd = 6;
     }
-    */
+    if(inp_05 == ON) { //добавляем индикатор Lock-UP если включен. 
+      spd = spd + 10;
+    }
+    
 }
-
